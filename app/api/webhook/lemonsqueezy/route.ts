@@ -86,7 +86,7 @@ export async function POST(req: Request) {
                     {
                         license_key: key,      // Correct column name
                         email: user_email,
-                        name: user_name || 'Test User',       // Map name to database column
+                        name: user_name,       // Map name to database column
                         plan: plan,
                         daily_limit: limit,    // Correct column name
                         is_active: isActive,   // Correct boolean column
