@@ -2,32 +2,33 @@
 -- Run this in Supabase SQL Editor
 
 -- ===========================================
--- Add device_id to existing table (if needed)
+-- Add device_id to usage_logs (if needed)
 -- ===========================================
-ALTER TABLE usage_logs ADD COLUMN IF NOT EXISTS device_id VARCHAR(64);
-CREATE INDEX IF NOT EXISTS idx_usage_device_date ON usage_logs(device_id, date);
+-- ALTER TABLE usage_logs ADD COLUMN IF NOT EXISTS device_id VARCHAR(64);
+-- CREATE INDEX IF NOT EXISTS idx_usage_device_date ON usage_logs(device_id, date);
 
 -- ===========================================
--- Create admin_settings table for password
+-- Create admins table for login
 -- ===========================================
-CREATE TABLE IF NOT EXISTS admin_settings (
-    id INTEGER PRIMARY KEY DEFAULT 1,
+CREATE TABLE IF NOT EXISTS admins (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    CONSTRAINT single_row CHECK (id = 1)
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- Enable RLS
-ALTER TABLE admin_settings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE admins ENABLE ROW LEVEL SECURITY;
 
-DROP POLICY IF EXISTS "Service role access admin_settings" ON admin_settings;
-CREATE POLICY "Service role access admin_settings" ON admin_settings
+DROP POLICY IF EXISTS "Service role access admins" ON admins;
+CREATE POLICY "Service role access admins" ON admins
     FOR ALL USING (auth.role() = 'service_role');
 
--- Set default password: admin123 (SHA256 hash)
-INSERT INTO admin_settings (id, password_hash)
-VALUES (1, '240be518fabd2724ddb6f04eeb9d5b9db2b0d3c3c0d4e5f6a7b8c9d0e1f2a3b4')
-ON CONFLICT (id) DO NOTHING;
+-- Insert admin: athuridha / Amar130803@
+INSERT INTO admins (username, password_hash)
+VALUES ('athuridha', '574de02538587a95db2c3752e25547467657223537e3d2ab33e8ffe9c5b98f92')
+ON CONFLICT (username) 
+DO UPDATE SET password_hash = EXCLUDED.password_hash;
 
 -- ===========================================
 -- Full Schema

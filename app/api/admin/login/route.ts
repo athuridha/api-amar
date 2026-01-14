@@ -8,55 +8,39 @@ function hashPassword(password: string): string {
 
 export async function POST(request: NextRequest) {
     try {
-        const { password } = await request.json();
+        const { username, password } = await request.json();
 
-        if (!password) {
+        if (!username || !password) {
             return NextResponse.json(
-                { success: false, error: 'Password required' },
+                { success: false, error: 'Username and password required' },
                 { status: 400 }
             );
         }
 
         const passwordHash = hashPassword(password);
 
-        // Check password in database
-        const { data: settings, error } = await supabase
-            .from('admin_settings')
-            .select('password_hash')
-            .eq('id', 1)
+        // Check in database
+        const { data: admin, error } = await supabase
+            .from('admins')
+            .select('id, username')
+            .eq('username', username)
+            .eq('password_hash', passwordHash)
             .single();
 
-        if (error || !settings) {
-            // Fallback to hardcoded password if table doesn't exist
-            if (password === 'admin123') {
-                const response = NextResponse.json({ success: true });
-                response.cookies.set('admin_auth', 'authenticated', {
-                    httpOnly: true,
-                    secure: process.env.NODE_ENV === 'production',
-                    sameSite: 'strict',
-                    maxAge: 60 * 60 * 24
-                });
-                return response;
-            }
+        if (error || !admin) {
             return NextResponse.json(
-                { success: false, error: 'Invalid password' },
+                { success: false, error: 'Invalid username or password' },
                 { status: 401 }
             );
         }
 
-        if (settings.password_hash !== passwordHash) {
-            return NextResponse.json(
-                { success: false, error: 'Invalid password' },
-                { status: 401 }
-            );
-        }
-
-        const response = NextResponse.json({ success: true });
-        response.cookies.set('admin_auth', 'authenticated', {
+        // Set auth cookie
+        const response = NextResponse.json({ success: true, username: admin.username });
+        response.cookies.set('admin_auth', admin.id, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
-            maxAge: 60 * 60 * 24
+            maxAge: 60 * 60 * 24 // 24 hours
         });
 
         return response;

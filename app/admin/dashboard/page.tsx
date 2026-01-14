@@ -72,199 +72,121 @@ export default function AdminDashboard() {
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-screen bg-gray-50">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-red-600"></div>
             </div>
         );
     }
 
     return (
-        <div style={{ display: 'flex', minHeight: '100vh', background: '#f3f4f6', fontFamily: 'Inter, sans-serif' }}>
+        <div className="flex min-h-screen bg-gray-50 font-sans">
             {/* Sidebar */}
-            <aside style={{
-                width: '260px',
-                background: '#1f2937',
-                color: 'white',
-                display: 'flex',
-                flexDirection: 'column',
-                position: 'fixed',
-                height: '100%',
-                zIndex: 10
-            }}>
-                <div style={{ padding: '24px', borderBottom: '1px solid #374151' }}>
-                    <h1 style={{ fontSize: '20px', fontWeight: 'bold', color: 'white', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <span style={{ background: '#c41e3a', width: '32px', height: '32px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>R</span>
-                        Rumah123
+            <aside className="w-72 bg-[#1a1f37] text-white flex flex-col fixed h-full z-10 shadow-2xl">
+                <div className="p-8 border-b border-gray-700/50">
+                    <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+                        <span className="bg-red-600 w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-lg shadow-red-900/50">R</span>
+                        Scraper API
                     </h1>
-                    <p style={{ fontSize: '12px', color: '#9ca3af', marginTop: '4px' }}>Admin Dashboard</p>
+                    <p className="text-xs text-gray-400 mt-2 font-medium tracking-wide uppercase">Admin Dashboard</p>
                 </div>
 
-                <nav style={{ flex: 1, padding: '24px 16px' }}>
-                    <ul style={{ listStyle: 'none', padding: 0 }}>
-                        <li>
-                            <button
-                                onClick={() => setActiveTab('overview')}
-                                style={{
-                                    width: '100%',
-                                    textAlign: 'left',
-                                    padding: '12px 16px',
-                                    borderRadius: '8px',
-                                    background: activeTab === 'overview' ? '#374151' : 'transparent',
-                                    color: activeTab === 'overview' ? 'white' : '#d1d5db',
-                                    border: 'none',
-                                    cursor: 'pointer',
-                                    marginBottom: '8px',
-                                    fontWeight: 500,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '12px'
-                                }}
-                            >
-                                <span>📊</span> Overview
-                            </button>
-                        </li>
-                        <li>
-                            <button
-                                onClick={() => setActiveTab('licenses')}
-                                style={{
-                                    width: '100%',
-                                    textAlign: 'left',
-                                    padding: '12px 16px',
-                                    borderRadius: '8px',
-                                    background: activeTab === 'licenses' ? '#374151' : 'transparent',
-                                    color: activeTab === 'licenses' ? 'white' : '#d1d5db',
-                                    border: 'none',
-                                    cursor: 'pointer',
-                                    marginBottom: '8px',
-                                    fontWeight: 500,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '12px'
-                                }}
-                            >
-                                <span>🔑</span> Licenses
-                            </button>
-                        </li>
-                    </ul>
+                <nav className="flex-1 p-6 space-y-2">
+                    <button
+                        onClick={() => setActiveTab('overview')}
+                        className={`w-full text-left px-5 py-3.5 rounded-xl transition-all duration-200 flex items-center gap-4 font-medium ${activeTab === 'overview'
+                                ? 'bg-red-600 text-white shadow-lg shadow-red-900/30'
+                                : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                            }`}
+                    >
+                        <span>📊</span> Overview
+                    </button>
+
+                    <button
+                        onClick={() => setActiveTab('licenses')}
+                        className={`w-full text-left px-5 py-3.5 rounded-xl transition-all duration-200 flex items-center gap-4 font-medium ${activeTab === 'licenses'
+                                ? 'bg-red-600 text-white shadow-lg shadow-red-900/30'
+                                : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                            }`}
+                    >
+                        <span>🔑</span> Licenses
+                    </button>
                 </nav>
 
-                <div style={{ padding: '24px', borderTop: '1px solid #374151' }}>
+                <div className="p-6 border-t border-gray-700/50">
                     <button
                         onClick={handleLogout}
-                        style={{
-                            width: '100%',
-                            padding: '12px',
-                            background: 'transparent',
-                            border: '1px solid #4b5563',
-                            color: '#d1d5db',
-                            borderRadius: '8px',
-                            cursor: 'pointer',
-                            fontSize: '14px',
-                            transition: 'all 0.2s'
-                        }}
-                        onMouseOver={(e) => { e.currentTarget.style.background = '#374151'; e.currentTarget.style.color = 'white'; }}
-                        onMouseOut={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#d1d5db'; }}
+                        className="w-full py-3 px-4 bg-gray-800/50 border border-gray-700 text-gray-300 rounded-xl hover:bg-red-900/20 hover:text-red-400 hover:border-red-900/50 transition-all duration-200 font-medium text-sm flex items-center justify-center gap-2 group"
                     >
+                        <span className="group-hover:rotate-180 transition-transform duration-300">➜</span>
                         Sign Out
                     </button>
                 </div>
             </aside>
 
             {/* Main Content */}
-            <main style={{ flex: 1, marginLeft: '260px', padding: '32px' }}>
-                <header style={{ marginBottom: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <main className="flex-1 ml-72 p-10">
+                <header className="mb-10 flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                     <div>
-                        <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#111827' }}>
+                        <h2 className="text-2xl font-bold text-gray-900">
                             {activeTab === 'overview' ? 'Dashboard Overview' : 'License Management'}
                         </h2>
-                        <p style={{ color: '#6b7280', fontSize: '14px' }}>Welcome back, Admin</p>
+                        <p className="text-gray-500 text-sm mt-1">Welcome back, Admin</p>
                     </div>
                     <button
                         onClick={fetchData}
-                        style={{
-                            padding: '10px 20px',
-                            background: 'white',
-                            border: '1px solid #e5e7eb',
-                            borderRadius: '8px',
-                            color: '#374151',
-                            cursor: 'pointer',
-                            fontSize: '14px',
-                            fontWeight: 500,
-                            boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px'
-                        }}
+                        className="px-5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-700 hover:bg-white hover:shadow-md transition-all duration-200 text-sm font-semibold flex items-center gap-2"
                     >
-                        Refresh Data
+                        🔄 Refresh Data
                     </button>
                 </header>
 
                 {activeTab === 'overview' && (
-                    <>
+                    <div className="animate-fade-in">
                         {/* Stats Cards */}
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '24px', marginBottom: '32px' }}>
-                            <div style={cardStyle}>
-                                <p style={cardLabelStyle}>Total Scrapes Today</p>
-                                <div style={cardValueStyle}>{stats?.totalScrapesToday.toLocaleString() || 0}</div>
-                                <div style={cardTrendStyle}>Updated just now</div>
-                            </div>
-                            <div style={cardStyle}>
-                                <p style={cardLabelStyle}>Active Users Today</p>
-                                <div style={cardValueStyle}>{stats?.uniqueUsersToday.toLocaleString() || 0}</div>
-                                <div style={cardTrendStyle}>Unique devices/licenses</div>
-                            </div>
-                            <div style={cardStyle}>
-                                <p style={cardLabelStyle}>Active Licenses</p>
-                                <div style={cardValueStyle}>{stats?.activeLicenses.toLocaleString() || 0}</div>
-                                <div style={{ ...cardTrendStyle, color: '#059669' }}>Pro & Enterprise</div>
-                            </div>
-                            <div style={cardStyle}>
-                                <p style={cardLabelStyle}>Total Licenses</p>
-                                <div style={cardValueStyle}>{stats?.totalLicenses.toLocaleString() || 0}</div>
-                                <div style={cardTrendStyle}>All time</div>
-                            </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                            <StatCard label="Scrapes Today" value={stats?.totalScrapesToday} color="red" />
+                            <StatCard label="Active Users" value={stats?.uniqueUsersToday} color="blue" />
+                            <StatCard label="Active Licenses" value={stats?.activeLicenses} color="green" />
+                            <StatCard label="Total Licenses" value={stats?.totalLicenses} color="purple" />
                         </div>
 
                         {/* Recent Usage Table */}
-                        <div style={sectionStyle}>
-                            <div style={{ padding: '20px 24px', borderBottom: '1px solid #f3f4f6' }}>
-                                <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#111827' }}>Recent Activity</h3>
+                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                            <div className="px-8 py-6 border-b border-gray-100">
+                                <h3 className="text-lg font-bold text-gray-900">Recent Activity</h3>
                             </div>
-                            <div style={{ overflowX: 'auto' }}>
-                                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                                    <thead style={{ background: '#f9fafb' }}>
+                            <div className="overflow-x-auto">
+                                <table className="w-full">
+                                    <thead className="bg-gray-50/50">
                                         <tr>
-                                            <th style={thStyle}>Date & Time</th>
-                                            <th style={thStyle}>User Type</th>
-                                            <th style={thStyle}>Identifier</th>
-                                            <th style={thStyle}>Scrapes</th>
+                                            <th className="px-8 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Date & Time</th>
+                                            <th className="px-8 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">User Type</th>
+                                            <th className="px-8 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Identifier</th>
+                                            <th className="px-8 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Scrapes</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody className="divide-y divide-gray-100">
                                         {recentUsage.length === 0 ? (
                                             <tr>
-                                                <td colSpan={4} style={{ padding: '32px', textAlign: 'center', color: '#6b7280' }}>No recent activity</td>
+                                                <td colSpan={4} className="px-8 py-10 text-center text-gray-500">No recent activity</td>
                                             </tr>
                                         ) : (
-                                            recentUsage.map((usage, i) => (
-                                                <tr key={usage.id} style={{ borderBottom: i !== recentUsage.length - 1 ? '1px solid #f3f4f6' : 'none' }}>
-                                                    <td style={tdStyle}>{new Date(usage.date).toLocaleDateString()}</td>
-                                                    <td style={tdStyle}>
-                                                        <span style={{
-                                                            padding: '2px 10px',
-                                                            borderRadius: '9999px',
-                                                            fontSize: '12px',
-                                                            fontWeight: 500,
-                                                            background: usage.license_id ? '#ecfdf5' : '#f3f4f6',
-                                                            color: usage.license_id ? '#059669' : '#4b5563'
-                                                        }}>
+                                            recentUsage.map((usage) => (
+                                                <tr key={usage.id} className="hover:bg-gray-50/50 transition-colors">
+                                                    <td className="px-8 py-4 text-sm text-gray-600 font-medium">
+                                                        {new Date(usage.date).toLocaleDateString()}
+                                                    </td>
+                                                    <td className="px-8 py-4">
+                                                        <span className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold
+                              ${usage.license_id
+                                                                ? 'bg-green-100 text-green-700'
+                                                                : 'bg-gray-100 text-gray-600'}`}>
                                                             {usage.license_id ? 'License' : 'Guest'}
                                                         </span>
                                                     </td>
-                                                    <td style={{ ...tdStyle, fontFamily: 'monospace', fontSize: '12px', color: '#111827' }}>
-                                                        {(usage.license_id || usage.device_id || '-').substring(0, 20)}...
+                                                    <td className="px-8 py-4 text-sm font-mono text-gray-500">
+                                                        {(usage.license_id || usage.device_id || '-').substring(0, 16)}...
                                                     </td>
-                                                    <td style={{ ...tdStyle, fontWeight: 600 }}>+{usage.count}</td>
+                                                    <td className="px-8 py-4 text-sm font-bold text-gray-900">+{usage.count}</td>
                                                 </tr>
                                             ))
                                         )}
@@ -272,66 +194,60 @@ export default function AdminDashboard() {
                                 </table>
                             </div>
                         </div>
-                    </>
+                    </div>
                 )}
 
                 {activeTab === 'licenses' && (
-                    <div style={sectionStyle}>
-                        <div style={{ padding: '20px 24px', borderBottom: '1px solid #f3f4f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#111827' }}>All Licenses</h3>
-                            {/* Future: Add Create License button here */}
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden animate-fade-in">
+                        <div className="px-8 py-6 border-b border-gray-100 flex justify-between items-center">
+                            <h3 className="text-lg font-bold text-gray-900">All Licenses</h3>
                         </div>
-                        <div style={{ overflowX: 'auto' }}>
-                            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                                <thead style={{ background: '#f9fafb' }}>
+                        <div className="overflow-x-auto">
+                            <table className="w-full">
+                                <thead className="bg-gray-50/50">
                                     <tr>
-                                        <th style={thStyle}>Email</th>
-                                        <th style={thStyle}>License Key</th>
-                                        <th style={thStyle}>Plan</th>
-                                        <th style={thStyle}>Limit</th>
-                                        <th style={thStyle}>Status</th>
-                                        <th style={thStyle}>Created</th>
+                                        <th className="px-8 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Email</th>
+                                        <th className="px-8 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">License Key</th>
+                                        <th className="px-8 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Plan</th>
+                                        <th className="px-8 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Limit</th>
+                                        <th className="px-8 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th className="px-8 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Created</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody className="divide-y divide-gray-100">
                                     {licenses.length === 0 ? (
                                         <tr>
-                                            <td colSpan={6} style={{ padding: '32px', textAlign: 'center', color: '#6b7280' }}>No licenses found</td>
+                                            <td colSpan={6} className="px-8 py-10 text-center text-gray-500">No licenses found</td>
                                         </tr>
                                     ) : (
-                                        licenses.map((license, i) => (
-                                            <tr key={license.id} style={{ borderBottom: i !== licenses.length - 1 ? '1px solid #f3f4f6' : 'none' }}>
-                                                <td style={tdStyle}>{license.email}</td>
-                                                <td style={{ ...tdStyle, fontFamily: 'monospace', fontSize: '12px', color: '#111827' }}>
+                                        licenses.map((license) => (
+                                            <tr key={license.id} className="hover:bg-gray-50/50 transition-colors">
+                                                <td className="px-8 py-4 text-sm text-gray-900 font-medium">{license.email}</td>
+                                                <td className="px-8 py-4 text-xs font-mono text-gray-500 bg-gray-50 inline-block rounded border border-gray-200 px-2 py-1 mt-3 mx-6">
                                                     {license.license_key}
                                                 </td>
-                                                <td style={tdStyle}>
-                                                    <span style={{
-                                                        padding: '2px 10px',
-                                                        borderRadius: '9999px',
-                                                        fontSize: '12px',
-                                                        fontWeight: 500,
-                                                        background: license.plan === 'enterprise' ? '#f5f3ff' : '#ecfdf5',
-                                                        color: license.plan === 'enterprise' ? '#7c3aed' : '#059669',
-                                                        textTransform: 'capitalize'
-                                                    }}>
+                                                <td className="px-8 py-4">
+                                                    <span className={`inline-flex px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide
+                            ${license.plan === 'enterprise'
+                                                            ? 'bg-purple-100 text-purple-700'
+                                                            : 'bg-green-100 text-green-700'}`}>
                                                         {license.plan}
                                                     </span>
                                                 </td>
-                                                <td style={tdStyle}>{license.daily_limit >= 999999 ? 'Unlimited' : license.daily_limit.toLocaleString()}</td>
-                                                <td style={tdStyle}>
-                                                    <span style={{
-                                                        padding: '2px 10px',
-                                                        borderRadius: '9999px',
-                                                        fontSize: '12px',
-                                                        fontWeight: 500,
-                                                        background: license.is_active ? '#ecfdf5' : '#fef2f2',
-                                                        color: license.is_active ? '#059669' : '#dc2626'
-                                                    }}>
+                                                <td className="px-8 py-4 text-sm text-gray-700 font-medium">
+                                                    {license.daily_limit >= 999999 ? 'Unlimited' : license.daily_limit.toLocaleString()}
+                                                </td>
+                                                <td className="px-8 py-4">
+                                                    <span className={`inline-flex px-3 py-1 rounded-full text-xs font-bold
+                            ${license.is_active
+                                                            ? 'bg-green-100 text-green-700'
+                                                            : 'bg-red-100 text-red-700'}`}>
                                                         {license.is_active ? 'Active' : 'Inactive'}
                                                     </span>
                                                 </td>
-                                                <td style={{ ...tdStyle, color: '#6b7280' }}>{new Date(license.created_at).toLocaleDateString()}</td>
+                                                <td className="px-8 py-4 text-sm text-gray-500">
+                                                    {new Date(license.created_at).toLocaleDateString()}
+                                                </td>
                                             </tr>
                                         ))
                                     )}
@@ -345,55 +261,23 @@ export default function AdminDashboard() {
     );
 }
 
-// Styles
-const cardStyle: React.CSSProperties = {
-    background: 'white',
-    padding: '24px',
-    borderRadius: '12px',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-    border: '1px solid #e5e7eb'
-};
+function StatCard({ label, value, color }: { label: string, value: number | undefined, color: string }) {
+    const colors: { [key: string]: string } = {
+        red: 'bg-red-50 text-red-600',
+        blue: 'bg-blue-50 text-blue-600',
+        green: 'bg-green-50 text-green-600',
+        purple: 'bg-purple-50 text-purple-600',
+    };
 
-const cardLabelStyle: React.CSSProperties = {
-    fontSize: '14px',
-    color: '#6b7280',
-    marginBottom: '8px',
-    fontWeight: 500
-};
-
-const cardValueStyle: React.CSSProperties = {
-    fontSize: '30px',
-    fontWeight: 700,
-    color: '#111827',
-    marginBottom: '4px'
-};
-
-const cardTrendStyle: React.CSSProperties = {
-    fontSize: '12px',
-    color: '#9ca3af'
-};
-
-const sectionStyle: React.CSSProperties = {
-    background: 'white',
-    borderRadius: '12px',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-    border: '1px solid #e5e7eb',
-    overflow: 'hidden'
-};
-
-const thStyle: React.CSSProperties = {
-    padding: '12px 24px',
-    textAlign: 'left',
-    fontSize: '12px',
-    fontWeight: 600,
-    color: '#6b7280',
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em'
-};
-
-const tdStyle: React.CSSProperties = {
-    padding: '16px 24px',
-    fontSize: '14px',
-    color: '#374151',
-    verticalAlign: 'middle'
-};
+    return (
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <p className="text-sm font-semibold text-gray-500 mb-2 uppercase tracking-wide">{label}</p>
+            <div className="flex items-end justify-between">
+                <div className="text-3xl font-bold text-gray-900">{value?.toLocaleString() || 0}</div>
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${colors[color]}`}>
+                    <span className="text-lg">📈</span>
+                </div>
+            </div>
+        </div>
+    );
+}
