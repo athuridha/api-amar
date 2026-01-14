@@ -28,8 +28,8 @@ export async function POST(req: Request) {
         const body = JSON.parse(rawBody);
         const eventName = body.meta.event_name;
 
-        // 2. Handle 'license_key_created'
-        if (eventName === 'license_key_created') {
+        // 2. Handle 'license_key_created' OR 'order_created' (for testing)
+        if (eventName === 'license_key_created' || eventName === 'order_created') {
             const { attributes } = body.data;
             const { user_email, user_name, key, status } = attributes;
             // The status from Lemonsqueezy is usually 'active' or 'inactive'
