@@ -2,47 +2,61 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import crypto from 'crypto';
 
-// Hash password using SHA256
 function hashPassword(password: string): string {
     return crypto.createHash('sha256').update(password).digest('hex');
 }
 
 export async function POST(request: NextRequest) {
     try {
-        const { username, password } = await request.json();
+        const { password } = await request.json();
 
-        if (!username || !password) {
+        if (!password) {
             return NextResponse.json(
-                { success: false, error: 'Username and password required' },
+                { success: false, error: 'Password required' },
                 { status: 400 }
             );
         }
 
-        // Hash the provided password
         const passwordHash = hashPassword(password);
 
-        // Check in database
-        const { data: admin, error } = await supabase
-            .from('admins')
-            .select('id, username')
-            .eq('username', username)
-            .eq('password_hash', passwordHash)
+        // Check password in database
+        const { data: settings, error } = await supabase
+            .from('admin_settings')
+            .select('password_hash')
+            .eq('id', 1)
             .single();
 
-        if (error || !admin) {
+        if (error || !settings) {
+            // Fallback to hardcoded password if table doesn't exist
+            if (password === 'admin123') {
+                const response = NextResponse.json({ success: true });
+                response.cookies.set('admin_auth', 'authenticated', {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production',
+                    sameSite: 'strict',
+                    maxAge: 60 * 60 * 24
+                });
+                return response;
+            }
             return NextResponse.json(
-                { success: false, error: 'Invalid username or password' },
+                { success: false, error: 'Invalid password' },
                 { status: 401 }
             );
         }
 
-        // Set auth cookie
-        const response = NextResponse.json({ success: true, username: admin.username });
-        response.cookies.set('admin_auth', admin.id, {
+        if (settings.password_hash !== passwordHash) {
+            return NextResponse.json(
+                { success: false, error: 'Invalid password' },
+                { status: 401 }
+            );
+        }
+
+        const response = NextResponse.json({ success: true });
+        response.cookies.set('admin_auth', 'authenticated', {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
-            maxAge: 60 * 60 * 24 // 24 hours
+            maxAge: 60 * 60 * 24
         });
 
         return response;

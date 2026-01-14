@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function AdminLogin() {
-    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -19,7 +18,7 @@ export default function AdminLogin() {
             const res = await fetch('/api/admin/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password }),
+                body: JSON.stringify({ password }),
             });
 
             const data = await res.json();
@@ -47,23 +46,39 @@ export default function AdminLogin() {
         }}>
             <div style={{
                 background: 'white',
-                padding: '40px',
-                borderRadius: '12px',
-                boxShadow: '0 10px 40px rgba(0,0,0,0.3)',
+                padding: '48px',
+                borderRadius: '16px',
+                boxShadow: '0 20px 60px rgba(0,0,0,0.4)',
                 width: '100%',
-                maxWidth: '400px'
+                maxWidth: '380px',
+                textAlign: 'center'
             }}>
+                <div style={{
+                    width: '80px',
+                    height: '80px',
+                    background: 'linear-gradient(135deg, #c41e3a, #e53e3e)',
+                    borderRadius: '20px',
+                    margin: '0 auto 24px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '32px',
+                    color: 'white',
+                    fontWeight: 'bold'
+                }}>
+                    R
+                </div>
+
                 <h1 style={{
-                    textAlign: 'center',
                     marginBottom: '8px',
                     color: '#1a202c',
-                    fontSize: '24px'
+                    fontSize: '28px',
+                    fontWeight: 700
                 }}>
-                    Admin Dashboard
+                    Admin Panel
                 </h1>
                 <p style={{
-                    textAlign: 'center',
-                    marginBottom: '24px',
+                    marginBottom: '32px',
                     color: '#718096',
                     fontSize: '14px'
                 }}>
@@ -71,59 +86,26 @@ export default function AdminLogin() {
                 </p>
 
                 <form onSubmit={handleLogin}>
-                    <div style={{ marginBottom: '16px' }}>
-                        <label style={{
-                            display: 'block',
-                            marginBottom: '8px',
-                            color: '#4a5568',
-                            fontSize: '14px',
-                            fontWeight: 500
-                        }}>
-                            Username
-                        </label>
-                        <input
-                            type="text"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            placeholder="Enter username"
-                            style={{
-                                width: '100%',
-                                padding: '12px 16px',
-                                border: '2px solid #e2e8f0',
-                                borderRadius: '8px',
-                                fontSize: '16px',
-                                outline: 'none',
-                                boxSizing: 'border-box'
-                            }}
-                        />
-                    </div>
-
-                    <div style={{ marginBottom: '16px' }}>
-                        <label style={{
-                            display: 'block',
-                            marginBottom: '8px',
-                            color: '#4a5568',
-                            fontSize: '14px',
-                            fontWeight: 500
-                        }}>
-                            Password
-                        </label>
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Enter password"
-                            style={{
-                                width: '100%',
-                                padding: '12px 16px',
-                                border: '2px solid #e2e8f0',
-                                borderRadius: '8px',
-                                fontSize: '16px',
-                                outline: 'none',
-                                boxSizing: 'border-box'
-                            }}
-                        />
-                    </div>
+                    <input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Enter admin password"
+                        style={{
+                            width: '100%',
+                            padding: '16px 20px',
+                            border: '2px solid #e2e8f0',
+                            borderRadius: '12px',
+                            fontSize: '16px',
+                            outline: 'none',
+                            boxSizing: 'border-box',
+                            textAlign: 'center',
+                            marginBottom: '16px',
+                            transition: 'border-color 0.2s'
+                        }}
+                        onFocus={(e) => e.target.style.borderColor = '#c41e3a'}
+                        onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
+                    />
 
                     {error && (
                         <div style={{
@@ -143,15 +125,19 @@ export default function AdminLogin() {
                         disabled={loading}
                         style={{
                             width: '100%',
-                            padding: '14px',
-                            background: loading ? '#a0aec0' : '#c41e3a',
+                            padding: '16px',
+                            background: loading ? '#a0aec0' : 'linear-gradient(135deg, #c41e3a, #e53e3e)',
                             color: 'white',
                             border: 'none',
-                            borderRadius: '8px',
+                            borderRadius: '12px',
                             fontSize: '16px',
                             fontWeight: 600,
-                            cursor: loading ? 'not-allowed' : 'pointer'
+                            cursor: loading ? 'not-allowed' : 'pointer',
+                            transition: 'transform 0.2s, box-shadow 0.2s',
+                            boxShadow: '0 4px 15px rgba(196, 30, 58, 0.3)'
                         }}
+                        onMouseOver={(e) => !loading && (e.currentTarget.style.transform = 'translateY(-2px)')}
+                        onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                     >
                         {loading ? 'Logging in...' : 'Login'}
                     </button>

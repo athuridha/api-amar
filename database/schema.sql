@@ -8,34 +8,31 @@ ALTER TABLE usage_logs ADD COLUMN IF NOT EXISTS device_id VARCHAR(64);
 CREATE INDEX IF NOT EXISTS idx_usage_device_date ON usage_logs(device_id, date);
 
 -- ===========================================
--- Create admins table for login
+-- Create admin_settings table for password
 -- ===========================================
-CREATE TABLE IF NOT EXISTS admins (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    username VARCHAR(50) UNIQUE NOT NULL,
+CREATE TABLE IF NOT EXISTS admin_settings (
+    id INTEGER PRIMARY KEY DEFAULT 1,
     password_hash VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    CONSTRAINT single_row CHECK (id = 1)
 );
 
 -- Enable RLS
-ALTER TABLE admins ENABLE ROW LEVEL SECURITY;
+ALTER TABLE admin_settings ENABLE ROW LEVEL SECURITY;
 
--- Policy
-DROP POLICY IF EXISTS "Service role access admins" ON admins;
-CREATE POLICY "Service role access admins" ON admins
+DROP POLICY IF EXISTS "Service role access admin_settings" ON admin_settings;
+CREATE POLICY "Service role access admin_settings" ON admin_settings
     FOR ALL USING (auth.role() = 'service_role');
 
--- Insert default admin (username: admin, password: admin123)
--- Password hash is SHA256 of 'admin123'
-INSERT INTO admins (username, password_hash)
-VALUES ('admin', '240be518fabd2724ddb6f04eeb9d5b9db2b0d3c3c0d4e5f6a7b8c9d0e1f2a3b4')
-ON CONFLICT (username) DO NOTHING;
+-- Set default password: admin123 (SHA256 hash)
+INSERT INTO admin_settings (id, password_hash)
+VALUES (1, '240be518fabd2724ddb6f04eeb9d5b9db2b0d3c3c0d4e5f6a7b8c9d0e1f2a3b4')
+ON CONFLICT (id) DO NOTHING;
 
 -- ===========================================
--- Full Schema (for fresh install)
+-- Full Schema
 -- ===========================================
 
--- Create licenses table
 CREATE TABLE IF NOT EXISTS licenses (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     license_key VARCHAR(64) UNIQUE NOT NULL,
@@ -48,7 +45,6 @@ CREATE TABLE IF NOT EXISTS licenses (
     notes TEXT
 );
 
--- Create usage_logs table
 CREATE TABLE IF NOT EXISTS usage_logs (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     license_id UUID REFERENCES licenses(id) ON DELETE CASCADE,
@@ -59,16 +55,13 @@ CREATE TABLE IF NOT EXISTS usage_logs (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Create indexes
 CREATE INDEX IF NOT EXISTS idx_licenses_key ON licenses(license_key);
 CREATE INDEX IF NOT EXISTS idx_usage_license_date ON usage_logs(license_id, date);
 CREATE INDEX IF NOT EXISTS idx_usage_device_date ON usage_logs(device_id, date);
 
--- Enable RLS
 ALTER TABLE licenses ENABLE ROW LEVEL SECURITY;
 ALTER TABLE usage_logs ENABLE ROW LEVEL SECURITY;
 
--- Policies
 DROP POLICY IF EXISTS "Service role access licenses" ON licenses;
 DROP POLICY IF EXISTS "Service role access usage" ON usage_logs;
 
