@@ -31,22 +31,54 @@ export async function POST(req: Request) {
         // 2. Handle 'license_key_created' OR 'order_created' (for testing)
         if (eventName === 'license_key_created' || eventName === 'order_created') {
             const { attributes } = body.data;
-            const { user_email, user_name, key, status } = attributes;
+            let { user_email, user_name, key, status } = attributes;
+
+            // For 'order_created' simulation, key might be missing.
+            if (!key && eventName === 'order_created') {
+                console.log('Simulation or Order Created: No key found, using placeholder for test.');
+                key = 'TEST-KEY-' + Date.now();
+                status = 'active';
+            }
+
             // The status from Lemonsqueezy is usually 'active' or 'inactive'
             const isActive = status === 'active';
 
-            // We need to determine the 'limit' based on the product.
-            // Since Lemonsqueezy payload for license creation might not directly give the Variant Name easily
-            // without fetching relationships, we can try to guess from the API or default to Pro.
-            // For now, let's default to Pro limits.
-
             let plan = 'Pro';
-            let limit = 50000;
+            let limit = 50000; // Default (Lifetime or fallback)
+            let expiresAt = null;
 
-            // Simple logic:
-            // You can query Lemonsqueezy API here if you need exact variant name validation.
-            // For MVP, if you have distinct limits, handle them here. 
-            // Or just give everyone 50k since daily pass users expire anyway.
+            // Dynamic Limit & Expiration Logic based on Product Name
+            const variantName = attributes.variant_name || '';
+
+            if (variantName.includes('Daily')) {
+                plan = 'Daily Pass';
+                limit = 5000;
+
+                // Set expiration to 2 days from now
+                const date = new Date();
+                date.setDate(date.getDate() + 2);
+                expiresAt = date.toISOString();
+
+            } else if (variantName.includes('Monthly')) {
+                plan = 'Monthly Pro';
+                limit = 25000;
+
+                // Set expiration to 30 days from now
+                const date = new Date();
+                date.setDate(date.getDate() + 30);
+                expiresAt = date.toISOString();
+
+            } else if (variantName.includes('Lifetime')) {
+                plan = 'Lifetime';
+                limit = 50000;
+            } else {
+                // Default fallback
+                limit = 25000;
+            }
+
+            if (!user_email) {
+                user_email = 'test@example.com';
+            }
 
             const { error } = await supabase
                 .from('licenses')
@@ -54,11 +86,12 @@ export async function POST(req: Request) {
                     {
                         license_key: key,      // Correct column name
                         email: user_email,
-                        name: user_name,       // Map name to database column
+                        name: user_name || 'Test User',       // Map name to database column
                         plan: plan,
                         daily_limit: limit,    // Correct column name
                         is_active: isActive,   // Correct boolean column
-                        created_at: new Date().toISOString()
+                        created_at: new Date().toISOString(),
+                        expires_at: expiresAt  // Save expiration date
                     }
                 ], { onConflict: 'license_key' });
 

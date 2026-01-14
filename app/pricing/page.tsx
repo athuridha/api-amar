@@ -35,7 +35,7 @@ export default function PricingPage() {
                                 </li>
                                 <li className="flex">
                                     <svg className="flex-shrink-0 w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
-                                    <span className="ml-3 text-gray-500">10,000 Data Limit</span>
+                                    <span className="ml-3 text-gray-500">5,000 Data Limit</span>
                                 </li>
                                 <li className="flex">
                                     <svg className="flex-shrink-0 w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
@@ -75,7 +75,7 @@ export default function PricingPage() {
                                 </li>
                                 <li className="flex">
                                     <svg className="flex-shrink-0 w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
-                                    <span className="ml-3 text-gray-500">50,000 Data Limit / Day</span>
+                                    <span className="ml-3 text-gray-500">25,000 Data Limit / Day</span>
                                 </li>
                                 <li className="flex">
                                     <svg className="flex-shrink-0 w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
