@@ -30,11 +30,27 @@ export async function POST(request: NextRequest) {
                 });
             }
 
+            // Get today's usage for this license
+            const today = new Date().toISOString().split('T')[0];
+            const { data: usageData } = await supabase
+                .from('usage_logs')
+                .select('count')
+                .eq('license_id', license.id)
+                .eq('date', today)
+                .single();
+
+            const usedToday = usageData?.count || 0;
+            const dailyLimit = license.daily_limit || 10000;
+            const remaining = dailyLimit >= 999999 ? 999999 : Math.max(0, dailyLimit - usedToday);
+
             return NextResponse.json({
                 valid: true,
                 success: true,
                 plan: license.plan,
-                dailyLimit: license.daily_limit || 10000,
+                limit: dailyLimit,
+                usage: usedToday,
+                remaining: remaining,
+                expiresAt: license.expires_at,
                 name: license.name
             });
         }
