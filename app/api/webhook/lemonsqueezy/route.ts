@@ -2,22 +2,6 @@ import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { supabase } from '@/lib/supabase';
 
-// Generate a random license key
-function generateLicenseKey() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    const segments = 4;
-    const segmentLength = 4;
-
-    let key = '';
-    for (let i = 0; i < segments; i++) {
-        for (let j = 0; j < segmentLength; j++) {
-            key += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        if (i < segments - 1) key += '-';
-    }
-    return key;
-}
-
 export async function POST(req: Request) {
     try {
         // 1. Verify Signature
@@ -44,44 +28,46 @@ export async function POST(req: Request) {
         const body = JSON.parse(rawBody);
         const eventName = body.meta.event_name;
 
-        // 2. Handle 'order_created'
-        if (eventName === 'order_created') {
+        // 2. Handle 'license_key_created'
+        if (eventName === 'license_key_created') {
             const { attributes } = body.data;
-            const { user_email, user_name } = attributes;
-            // You can map 'first_order_item.variant_id' to specific plans if you have multiple
+            const { user_email, key, status } = attributes;
+            // The status from Lemonsqueezy is usually 'active' or 'inactive'
+            const isActive = status === 'active';
 
-            // 3. Generate License
-            const licenseKey = generateLicenseKey();
-            const plan = 'Pro'; // Default to Pro for now
-            const limit = 50000; // Pro limit
+            // We need to determine the 'limit' based on the product.
+            // Since Lemonsqueezy payload for license creation might not directly give the Variant Name easily
+            // without fetching relationships, we can try to guess from the API or default to Pro.
+            // For now, let's default to Pro limits.
 
-            // 4. Save to Database
+            let plan = 'Pro';
+            let limit = 50000;
+
+            // Simple logic:
+            // You can query Lemonsqueezy API here if you need exact variant name validation.
+            // For MVP, if you have distinct limits, handle them here. 
+            // Or just give everyone 50k since daily pass users expire anyway.
+
             const { error } = await supabase
                 .from('licenses')
-                .insert([
+                .upsert([
                     {
-                        key: licenseKey,
+                        license_key: key,      // Correct column name
                         email: user_email,
                         plan: plan,
-                        limit: limit,
-                        status: 'active',
+                        daily_limit: limit,    // Correct column name
+                        is_active: isActive,   // Correct boolean column
                         created_at: new Date().toISOString()
                     }
-                ]);
+                ], { onConflict: 'license_key' });
 
             if (error) {
                 console.error('DB Error:', error);
-                return NextResponse.json({ error: 'Failed to create license' }, { status: 500 });
+                return NextResponse.json({ error: 'Failed to save license' }, { status: 500 });
             }
 
-            console.log(`License created for ${user_email}: ${licenseKey}`);
-
-            // 5. Important: Ensure Lemonsqueezy sends this key to the user
-            // Ideally, you'd use Lemonsqueezy API to update the order with the license key
-            // or send your own email here (using Resend/SendGrid).
-            // For MVP, user might need to check their license in your dash or you email manually if not automated.
-
-            return NextResponse.json({ received: true, license: licenseKey });
+            console.log(`License saved for ${user_email}: ${key}`);
+            return NextResponse.json({ received: true });
         }
 
         return NextResponse.json({ received: true });
