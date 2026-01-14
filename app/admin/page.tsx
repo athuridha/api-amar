@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function AdminLogin() {
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -18,7 +19,7 @@ export default function AdminLogin() {
             const res = await fetch('/api/admin/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ password }),
+                body: JSON.stringify({ username, password }),
             });
 
             const data = await res.json();
@@ -78,25 +79,49 @@ export default function AdminLogin() {
                             fontSize: '14px',
                             fontWeight: 500
                         }}>
-                            Password
+                            Username
                         </label>
                         <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Enter admin password"
+                            type="text"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            placeholder="Enter username"
                             style={{
                                 width: '100%',
                                 padding: '12px 16px',
                                 border: '2px solid #e2e8f0',
                                 borderRadius: '8px',
                                 fontSize: '16px',
-                                transition: 'border-color 0.2s',
                                 outline: 'none',
                                 boxSizing: 'border-box'
                             }}
-                            onFocus={(e) => e.target.style.borderColor = '#c41e3a'}
-                            onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
+                        />
+                    </div>
+
+                    <div style={{ marginBottom: '16px' }}>
+                        <label style={{
+                            display: 'block',
+                            marginBottom: '8px',
+                            color: '#4a5568',
+                            fontSize: '14px',
+                            fontWeight: 500
+                        }}>
+                            Password
+                        </label>
+                        <input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Enter password"
+                            style={{
+                                width: '100%',
+                                padding: '12px 16px',
+                                border: '2px solid #e2e8f0',
+                                borderRadius: '8px',
+                                fontSize: '16px',
+                                outline: 'none',
+                                boxSizing: 'border-box'
+                            }}
                         />
                     </div>
 
@@ -125,8 +150,7 @@ export default function AdminLogin() {
                             borderRadius: '8px',
                             fontSize: '16px',
                             fontWeight: 600,
-                            cursor: loading ? 'not-allowed' : 'pointer',
-                            transition: 'background 0.2s'
+                            cursor: loading ? 'not-allowed' : 'pointer'
                         }}
                     >
                         {loading ? 'Logging in...' : 'Login'}

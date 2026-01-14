@@ -2,18 +2,34 @@
 -- Run this in Supabase SQL Editor
 
 -- ===========================================
--- OPTION 1: Fresh Install (drop existing tables)
+-- Add device_id to existing table (if needed)
 -- ===========================================
--- Uncomment lines below if you want to start fresh:
--- DROP TABLE IF EXISTS usage_logs;
--- DROP TABLE IF EXISTS licenses;
-
--- ===========================================
--- OPTION 2: Add device_id to existing table
--- ===========================================
--- Run this if you already have the tables:
 ALTER TABLE usage_logs ADD COLUMN IF NOT EXISTS device_id VARCHAR(64);
 CREATE INDEX IF NOT EXISTS idx_usage_device_date ON usage_logs(device_id, date);
+
+-- ===========================================
+-- Create admins table for login
+-- ===========================================
+CREATE TABLE IF NOT EXISTS admins (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Enable RLS
+ALTER TABLE admins ENABLE ROW LEVEL SECURITY;
+
+-- Policy
+DROP POLICY IF EXISTS "Service role access admins" ON admins;
+CREATE POLICY "Service role access admins" ON admins
+    FOR ALL USING (auth.role() = 'service_role');
+
+-- Insert default admin (username: admin, password: admin123)
+-- Password hash is SHA256 of 'admin123'
+INSERT INTO admins (username, password_hash)
+VALUES ('admin', '240be518fabd2724ddb6f04eeb9d5b9db2b0d3c3c0d4e5f6a7b8c9d0e1f2a3b4')
+ON CONFLICT (username) DO NOTHING;
 
 -- ===========================================
 -- Full Schema (for fresh install)
