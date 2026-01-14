@@ -13,24 +13,29 @@ const SCRAPER_CONFIG = {
             'article[data-test-id]'
         ],
         title: [
+            'h2',                              // Direct h2 (most reliable)
             'h2[data-test-id*="title"]',
             'h2 a',
             '[class*="title"]'
         ],
         url: [
             'a[href*="/properti/"]',
-            'a[href*="/perumahan-baru/"]'
+            'a[href*="/perumahan-baru/"]',
+            'a[href^="/"]'                     // Fallback for any link
         ],
         price: [
+            'span.text-primary.font-bold',     // Current DOM structure
             '[data-test-id*="price"]',
-            '[class*="price"]'
+            '[class*="price"]',
+            'span.font-bold'                   // Fallback
         ],
         location: [
+            '[class*="text-gray"]',            // Updated for current DOM
             '[class*="location"]',
             '[class*="address"]',
             '.entity-item-text'
         ],
-        specs: { // Icons/Text patterns
+        specs: {
             bedroom: 'bedroom',
             bathroom: 'bathroom',
             area_land: 'LT',
@@ -39,8 +44,8 @@ const SCRAPER_CONFIG = {
         image: 'img'
     },
     settings: {
-        scrollRounds: 30, // Max auto-scroll
-        scrollPause: 500  // Time between scrolls
+        scrollRounds: 30,
+        scrollPause: 500
     }
 };
 
