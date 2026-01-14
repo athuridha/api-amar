@@ -19,15 +19,40 @@ export async function POST(request: NextRequest) {
 
         const passwordHash = hashPassword(password);
 
+        console.log('[Login Attempt]', {
+            username,
+            passwordLength: password.length,
+            generatedHash: passwordHash
+        });
+
         // Check in database
         const { data: admin, error } = await supabase
             .from('admins')
-            .select('id, username')
+            .select('id, username, password_hash')
             .eq('username', username)
-            .eq('password_hash', passwordHash)
             .single();
 
-        if (error || !admin) {
+        if (error) {
+            console.error('[Login Error] Supabase error:', error);
+            return NextResponse.json(
+                { success: false, error: 'Database error' },
+                { status: 500 }
+            );
+        }
+
+        if (!admin) {
+            console.log('[Login Failed] User not found');
+            return NextResponse.json(
+                { success: false, error: 'Invalid username or password' },
+                { status: 401 }
+            );
+        }
+
+        if (admin.password_hash !== passwordHash) {
+            console.log('[Login Failed] Hash mismatch', {
+                expected: admin.password_hash,
+                actual: passwordHash
+            });
             return NextResponse.json(
                 { success: false, error: 'Invalid username or password' },
                 { status: 401 }

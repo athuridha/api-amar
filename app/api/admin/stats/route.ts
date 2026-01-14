@@ -5,7 +5,8 @@ import { cookies } from 'next/headers';
 // Check auth
 async function isAuthenticated() {
     const cookieStore = await cookies();
-    return cookieStore.get('admin_auth')?.value === 'authenticated';
+    const authCookie = cookieStore.get('admin_auth');
+    return !!authCookie?.value;
 }
 
 export async function GET(request: NextRequest) {

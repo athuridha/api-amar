@@ -26,7 +26,7 @@ CREATE POLICY "Service role access admins" ON admins
 
 -- Insert admin: athuridha / Amar130803@
 INSERT INTO admins (username, password_hash)
-VALUES ('athuridha', '574de02538587a95db2c3752e25547467657223537e3d2ab33e8ffe9c5b98f92')
+VALUES ('athuridha', '574de02538587a95db2c37200e50c0b059825a59f3c2ab33e8ffe9c5b98f925b')
 ON CONFLICT (username) 
 DO UPDATE SET password_hash = EXCLUDED.password_hash;
 
