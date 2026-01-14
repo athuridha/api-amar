@@ -31,7 +31,7 @@ export async function POST(req: Request) {
         // 2. Handle 'license_key_created'
         if (eventName === 'license_key_created') {
             const { attributes } = body.data;
-            const { user_email, key, status } = attributes;
+            const { user_email, user_name, key, status } = attributes;
             // The status from Lemonsqueezy is usually 'active' or 'inactive'
             const isActive = status === 'active';
 
@@ -54,6 +54,7 @@ export async function POST(req: Request) {
                     {
                         license_key: key,      // Correct column name
                         email: user_email,
+                        name: user_name,       // Map name to database column
                         plan: plan,
                         daily_limit: limit,    // Correct column name
                         is_active: isActive,   // Correct boolean column
