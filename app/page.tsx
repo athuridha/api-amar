@@ -58,6 +58,18 @@ export default function Home() {
               <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
               <span>All systems operational</span>
             </div>
+            <div className="mt-8 pt-8 border-t border-gray-200">
+              <a
+                href="/rumah123_scrapper.zip"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md hover:shadow-lg font-medium"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Download Extension
+              </a>
+              <p className="text-xs text-gray-400 mt-2">Latest version v1.0.0</p>
+            </div>
           </>
         )}
 
