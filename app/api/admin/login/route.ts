@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
 import crypto from 'crypto';
 
 // MOCK ADMIN LOGIN (Since we are migrating fast and maybe didn't create Admin table)
@@ -14,13 +15,16 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Simple auth using env var (much safer/easier than migrating 'admins' table right now)
-        // User has ADMIN_PASSWORD in .env
-        const adminPassword = process.env.ADMIN_PASSWORD;
+        const passwordHash = crypto.createHash('sha256').update(password).digest('hex');
 
-        if (username === 'admin' && password === adminPassword) {
-            const response = NextResponse.json({ success: true, username: 'admin' });
-            response.cookies.set('admin_auth', 'admin-session-id', {
+        // Check in database
+        const admin = await prisma.admin.findUnique({
+            where: { username: username }
+        });
+
+        if (admin && admin.password_hash === passwordHash) {
+            const response = NextResponse.json({ success: true, username: admin.username });
+            response.cookies.set('admin_auth', admin.id, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'strict',
