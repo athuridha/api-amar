@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { prisma } from '@/lib/prisma';
 import { cookies } from 'next/headers';
 
 // Check auth
@@ -21,14 +21,10 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ success: false, error: 'Invalid parameters' }, { status: 400 });
         }
 
-        const { data, error } = await supabase
-            .from('licenses')
-            .update({ is_active })
-            .eq('id', id)
-            .select()
-            .single();
-
-        if (error) throw error;
+        const data = await prisma.license.update({
+            where: { id },
+            data: { is_active }
+        });
 
         return NextResponse.json({ success: true, license: data });
 

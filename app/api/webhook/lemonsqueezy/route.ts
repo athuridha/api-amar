@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
-import { supabase } from '@/lib/supabase';
+import { prisma } from '@/lib/prisma';
 
 export async function POST(req: Request) {
     try {
@@ -80,25 +80,22 @@ export async function POST(req: Request) {
                 user_email = 'test@example.com';
             }
 
-            const { error } = await supabase
-                .from('licenses')
-                .upsert([
-                    {
-                        license_key: key,      // Correct column name
-                        email: user_email,
-                        name: user_name,       // Map name to database column
-                        plan: plan,
-                        daily_limit: limit,    // Correct column name
-                        is_active: isActive,   // Correct boolean column
-                        created_at: new Date().toISOString(),
-                        expires_at: expiresAt  // Save expiration date
-                    }
-                ], { onConflict: 'license_key' });
+            const licenseData = {
+                license_key: key,
+                email: user_email,
+                name: user_name,
+                plan: plan,
+                daily_limit: limit,
+                is_active: isActive,
+                created_at: new Date(), // Prisma expects Date object
+                expires_at: expiresAt ? new Date(expiresAt) : null
+            };
 
-            if (error) {
-                console.error('DB Error:', error);
-                return NextResponse.json({ error: 'Failed to save license' }, { status: 500 });
-            }
+            await prisma.license.upsert({
+                where: { license_key: key },
+                create: licenseData,
+                update: licenseData
+            });
 
             console.log(`License saved for ${user_email}: ${key}`);
             return NextResponse.json({ received: true });

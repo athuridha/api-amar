@@ -54,40 +54,12 @@ export default function AdminDashboard() {
     useEffect(() => {
         fetchData();
 
-        // Setup realtime subscription
-        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-        const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-        if (supabaseUrl && supabaseKey) {
-            import('@supabase/supabase-js').then(({ createClient }) => {
-                const supabase = createClient(supabaseUrl, supabaseKey);
-
-                const channel = supabase
-                    .channel('usage_changes')
-                    .on('postgres_changes',
-                        { event: '*', schema: 'public', table: 'usage_logs' },
-                        (payload) => {
-                            console.log('[Realtime] Usage updated:', payload);
-                            setLastUpdate(new Date());
-                            fetchData(); // Refresh data on any change
-                        }
-                    )
-                    .subscribe((status) => {
-                        console.log('[Realtime] Subscription status:', status);
-                    });
-
-                return () => {
-                    supabase.removeChannel(channel);
-                };
-            });
-        } else {
-            // Fallback: polling every 10 seconds if realtime not configured
-            const interval = setInterval(() => {
-                fetchData();
-                setLastUpdate(new Date());
-            }, 10000);
-            return () => clearInterval(interval);
-        }
+        // Polling every 10 seconds
+        const interval = setInterval(() => {
+            fetchData();
+            setLastUpdate(new Date());
+        }, 10000);
+        return () => clearInterval(interval);
     }, [router]);
 
     const handleToggleStatus = async (licenseId: string, currentStatus: boolean) => {

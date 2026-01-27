@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model License {
+  id          String   @id @default(uuid())
+  license_key String   @unique
+  email       String
+  name        String?
+  plan        String
+  daily_limit Int      @default(500)
+  is_active   Boolean  @default(true)
+  created_at  DateTime @default(now())
+  expires_at  DateTime?
+
+  usage_logs  UsageLog[]
+
+  @@map("licenses")
+}
+
+model UsageLog {
+  id         String   @id @default(uuid())
+  license_id String?
+  device_id  String?
+  date       String   // Format: YYYY-MM-DD
+  count      Int      @default(0)
+  ip_address String?
+  user_agent String?
+  updated_at DateTime @default(now()) @updatedAt
+  
+  license    License? @relation(fields: [license_id], references: [id])
+
+  @@map("usage_logs")
+}

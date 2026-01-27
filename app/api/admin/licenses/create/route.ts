@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { prisma } from '@/lib/prisma';
 import { cookies } from 'next/headers';
 import crypto from 'crypto';
 
@@ -43,22 +43,16 @@ export async function POST(request: NextRequest) {
         }
 
         // Insert into DB
-        const { data, error } = await supabase
-            .from('licenses')
-            .insert([
-                {
-                    license_key: licenseKey,
-                    email,
-                    plan,
-                    daily_limit: parseInt(limit) || 500,
-                    expires_at: expiresAt,
-                    is_active: true
-                }
-            ])
-            .select()
-            .single();
-
-        if (error) throw error;
+        const data = await prisma.license.create({
+            data: {
+                license_key: licenseKey,
+                email,
+                plan,
+                daily_limit: parseInt(limit) || 500,
+                expires_at: expiresAt,
+                is_active: true
+            }
+        });
 
         return NextResponse.json({ success: true, license: data });
 
